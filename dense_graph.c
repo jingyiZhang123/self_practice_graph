@@ -12,6 +12,11 @@ extern void DenseGraph_AddEdge(DenseGraph_p dg, int v, int w);
 extern bool DenseGraph_HasEdge(DenseGraph_p dg, int v, int w);
 extern void DenseGraph_PrintGraph(const DenseGraph_p dg);
 
+extern DenseIterator_p DenseIterator_Init(DenseGraph_p g, int v);
+extern int DenseIterator_begin(DenseIterator_p iter);
+extern int DenseIterator_next(DenseIterator_p iter);
+extern bool DenseIterator_end(DenseIterator_p iter);
+
 
 DenseGraph_p DenseGraph_Init(const int num_vertexes, const bool directed){
     DenseGraph_p new_dg = malloc(sizeof(DenseGraph_t));
@@ -78,4 +83,31 @@ void DenseGraph_PrintGraph(const DenseGraph_p dg){
         printf("\n");
     }
     return ;
+}
+
+
+DenseIterator_p DenseIterator_Init(DenseGraph_p g, int v){
+    DenseIterator_p iter = malloc(sizeof(DenseIterator_t));
+    assert(iter != NULL);
+
+    iter->G = g;
+    iter->v = v;
+    iter->index = -1;
+}
+
+int DenseIterator_begin(DenseIterator_p iter){
+    iter->index = -1;
+    return DenseIterator_next(iter);
+}
+
+int DenseIterator_next(DenseIterator_p iter){
+    for (iter->index += 1; iter->index < iter->G->num_vertexes; iter->index ++) {
+        if(iter->G->graph[iter->v][iter->index])
+            return iter->index;
+    }
+    return -1;
+}
+
+bool DenseIterator_end(DenseIterator_p iter){
+    return iter->index >= iter->G->num_vertexes;
 }

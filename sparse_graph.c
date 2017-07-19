@@ -10,6 +10,13 @@ extern void SparseGraph_AddEdge(SparseGraph_p sg, int v, int w);
 extern bool SparseGraph_HasEdge(SparseGraph_p sg, int v, int w);
 extern void SparseGraph_PrintGraph(const SparseGraph_p sg);
 
+extern adjIterator_p adjIterator_Init(SparseGraph_p g, int v);
+extern int adjIterator_begin(adjIterator_p iter);
+extern int adjIterator_next(adjIterator_p iter);
+extern bool adjIterator_end(adjIterator_p iter);
+
+
+
 static Node_p _add_node(Node_p head, Node_p new_node);
 
 
@@ -71,6 +78,48 @@ void SparseGraph_PrintGraph(const SparseGraph_p sg){
     }
 }
 
+
+adjIterator_p adjIterator_Init(SparseGraph_p g, int v){
+    adjIterator_p iter = malloc(sizeof(adjIterator_t));
+    assert(iter != NULL);
+    iter->G = g;
+    iter->v = v;
+    iter->index = 0;
+
+    return iter;
+}
+
+int adjIterator_begin(adjIterator_p iter){
+    iter->index = 0;
+    if (iter->G->graph[iter->v] != NULL)
+        return iter->G->graph[iter->v]->value;
+    return -1;
+}
+
+int adjIterator_next(adjIterator_p iter){
+    iter->index ++;
+    Node_p node=iter->G->graph[iter->v];
+    if (node == NULL)
+        return -1;
+    for (int i = 0; i < iter->index; i++) {
+        node = node->next;
+        if (node == NULL)
+            return -1;
+    }
+    return node->value;
+}
+
+bool adjIterator_end(adjIterator_p iter){
+    Node_p node=iter->G->graph[iter->v];
+    if (node == NULL)
+        return true;
+    for (int i = 0; i < iter->index; i++) {
+        node = node->next;
+        if (node == NULL)
+            return true;
+    }
+    return false;
+}
 
 
 Node_p _add_node(Node_p head, Node_p new_node){
